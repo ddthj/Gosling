@@ -81,7 +81,7 @@ def exampleController(agent, target_object,target_speed):
     return controller_state
 
 def shotController(agent, target_object,target_speed):
-    goal_local = toLocal([0,-sign(agent.team)*FIELD_LENGTH/2,100])
+    goal_local = toLocal([0,-sign(agent.team)*FIELD_LENGTH/2,100],agent.me)
     goal_angle = math.atan2(goal_local.data[1],goal_local.data[0])
 
     location = toLocal(target_object,agent.me)

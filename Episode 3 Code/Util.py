@@ -49,7 +49,7 @@ def sign(x):
     else:
         return 1
 
-def angle2D(target_location,object_location):
+def angle2(target_location,object_location):
     difference = toLocation(target_location) - toLocation(object_location)
     return math.atan2(difference.data[1], difference.data[0])
 
