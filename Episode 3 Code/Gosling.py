@@ -15,7 +15,7 @@ class Gosling(BaseAgent):
         self.start = time.time()
 
         self.state = quickShot()
-        self.controller = exampleController
+        self.controller = shotController
         
 
     def get_output(self, game: GameTickPacket) -> SimpleControllerState:
