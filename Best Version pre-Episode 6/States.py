@@ -9,7 +9,7 @@ class calcShot:
         self.expired = False
 
     def available(self,agent):
-        if ballReady(agent) and abs(agent.ball.location.data[1]) < 5050 and ballProject(agent) > 500 +  (velocity2D(agent.me)*2):
+        if ballReady(agent) and abs(agent.ball.location.data[1]) < 5050 and ballProject(agent) > 500 +  (velocity2D(agent.me)):
             return True
         return False
 
@@ -215,7 +215,7 @@ def frugalController(agent,target,speed):
         controller_state.throttle = 0
 
     time_difference = time.time() - agent.start
-    if time_difference > 2.2 and distance2D(target,agent.me) > (velocity2D(agent.me)*2.3) and abs(angle_to_target) < 1 and current_speed < speed:
+    if time_difference > 2.2 and distance2D(target,agent.me) > (velocity2D(agent.me)*2.3) and abs(angle_to_target) < 0.9 and current_speed < speed and current_speed > 220:
         agent.start = time.time()
     elif time_difference <= 0.1:
         controller_state.jump = True
