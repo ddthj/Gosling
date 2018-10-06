@@ -9,7 +9,7 @@ class calcShot:
         self.expired = False
 
     def available(self,agent):
-        if ballReady(agent) and abs(agent.ball.location.data[1]) < 5050 and ballProject(agent) > 500 +  (velocity2D(agent.me)):
+        if ballReady(agent) and abs(agent.ball.location.data[1]) < 5050 and ((ballProject(agent) > 400 +  (velocity2D(agent.me))) or (distance2D(agent.me,agent.ball) > velocity2D(agent.me) and ballProject(agent) >300)):
             return True
         return False
 
@@ -21,7 +21,7 @@ class calcShot:
         rightPost = Vector3([sign(agent.team)*700, 5100*-sign(agent.team), 200])
         center = Vector3([0, 5150*-sign(agent.team), 200])
 
-        #time stuff that we don't worry about yet
+        #time stuff that we don't worry about yet, the fact that guess is forced to 0 means this doesn't actually do anything right now
         time_guess = 0
         bloc = future(agent.ball,time_guess)
 
@@ -145,7 +145,7 @@ class quickShot:
         if distance_to_target > 2.5*velocity2D(agent.me):
             speed = 2300
         else:
-            speed=  2300 - (300*(angle_to_target**2))
+            speed=  2300 - (320*(angle_to_target**2))
 
         agent.controller = shotController
         
