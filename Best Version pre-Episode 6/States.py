@@ -79,7 +79,7 @@ class calcShot:
         if distance_to_target > 2.5*velocity2D(agent.me):
             speed = 2300
         else:
-            speed=  2300 - (250*(angle_to_target**2))
+            speed=  2300 - (340*(angle_to_target**2))
 
         #picking our rendered target color based on the speed we want to go
         colorRed = cap(int( (speed/2300) * 255),0,255)
@@ -145,7 +145,7 @@ class quickShot:
         if distance_to_target > 2.5*velocity2D(agent.me):
             speed = 2300
         else:
-            speed=  2300 - (320*(angle_to_target**2))
+            speed=  2300 - (340*(angle_to_target**2))
 
         agent.controller = shotController
         
