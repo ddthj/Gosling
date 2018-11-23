@@ -88,7 +88,13 @@ def targetFuture(target,velocity,time):
     z = target.data[2] + (velocity.data[2] * time) - (325 * time * time)
     return Vector3([x,y,z])
 
-    
+def backsolveFuture(location,velocity,future,time):
+    d = (future-location).data
+    dx = (2* ((d[0]/time)-velocity.data[0]))/time
+    dy = (2* ((d[1]/time)-velocity.data[1]))/time
+    dz = (2 * ((325*time)+((d[2]/time)-velocity.data[2])))/time
+    return Vector3([dx,dy,dz])
+
 def timeZ(ball):
     rate = 0.97
     return quad(-325, ball.velocity.data[2] * rate, ball.location.data[2]-92.75)

@@ -11,26 +11,26 @@ class seven:
     def execute(self,agent):
         if self.jumping == False and agent.me.grounded:
             self.jumping = True
-            test = dpp(agent.ball.location,agent.ball.velocity,agent.me.location,agent.me.velocity)
-            eta =  math.sqrt(abs((agent.ball.location - agent.me.location).data[2] - agent.me.location.data[2])/500) * 1.1
-            eta += math.sqrt(abs((agent.ball.location - agent.me.location).data[0] - agent.me.location.data[0])/500)
-            eta += math.sqrt(abs((agent.ball.location - agent.me.location).data[1] - agent.me.location.data[1])/500)
+            test = dpp(agent.ball.location,agent.ball.velocity,agent.me.location,agent.me.velocity)/1.5
+            eta = math.sqrt(((agent.ball.location - agent.me.location).magnitude()+test)/525)
             self.time = time.time() + eta
             target = Vector3([0,0,0])
         else:
             time_remain = cap(self.time - time.time(),-2,10)
-            target = future(agent.ball, time_remain)
-            relative = target - agent.me.location
+            if time_remain != 0:
+                target = future(agent.ball, time_remain)
+            else:
+                time_remain = 0.1
+                target = future(agent.ball, 0.1)
+            oops = Vector3(target.data)
+        
             if time_remain > -1.9:
-                x = relative.data[0] / time_remain
-                y = relative.data[1] / time_remain
-                z = (relative.data[2]+(time_remain*325)) / time_remain
-                target = Vector3([x,y,z])
+                target = backsolveFuture(agent.me.location,agent.me.velocity, target,time_remain)
                 agent.renderer.begin_rendering()
                 agent.renderer.draw_line_3d(agent.me.location.data, targetFuture(agent.me.location,agent.me.velocity,time_remain).data, agent.renderer.create_color(255,255,190,0))
                 agent.renderer.draw_rect_3d(targetFuture(agent.me.location,agent.me.velocity,time_remain).data, 10,10, True, agent.renderer.create_color(255,255,190,0))
-                agent.renderer.draw_line_3d(agent.me.location.data, target.data, agent.renderer.create_color(255,0,190,255))
-                agent.renderer.draw_rect_3d(target.data, 10,10, True, agent.renderer.create_color(255,0,190,255))
+                agent.renderer.draw_line_3d(agent.me.location.data, oops.data, agent.renderer.create_color(255,0,190,255))
+                agent.renderer.draw_rect_3d(oops.data, 10,10, True, agent.renderer.create_color(255,0,190,255))
                 agent.renderer.end_rendering()
             else:
                 self.expired = True
@@ -40,31 +40,42 @@ class seven:
 
 def deltaC(agent, target):
     c = SimpleControllerState()
-    target = target - agent.me.velocity
+    target = target# - agent.me.velocity
     target_local = toLocal(agent.me.location + target,agent.me)
     angle_to_target = math.atan2(target_local.data[1],target_local.data[0])
     pitch_to_target = math.atan2(target_local.data[2],target_local.data[0])  
     
     if agent.me.grounded:
         if agent.jt + 1.5 > time.time():
-            c.jump = True        
+            c.jump = True
         else:
             c.jump = False
             agent.jt = time.time()
     else:
-        if agent.jt > time.time() - 1.5:
-            c.jump = True
-        else:
-            c.jump = False
-        c.yaw = steerPD(angle_to_target,-agent.me.rvelocity.data[1]/5)
+        c.yaw = steerPD(angle_to_target,-agent.me.rvelocity.data[1]/4)
         c.pitch = steerPD(pitch_to_target,agent.me.rvelocity.data[0]/4)
-        if target.magnitude() > 30:
+        if target.magnitude() > 10:
             c.boost = True
-        if abs(pitch_to_target) + abs(angle_to_target) > 0.45:
+        if abs(pitch_to_target) + abs(angle_to_target) > 0.9:
             c.boost = False
-
+        else:
+            top = toLocal([agent.me.location.data[0],agent.me.location.data[1],agent.me.location.data[2]+1000],agent.me)
+            roll_to_target = math.atan2(top.data[1],top.data[2])
+            c.roll = steerPD(roll_to_target,agent.me.rvelocity.data[2]*0.5)
+        tsj = time.time() - agent.jt
+        if tsj < 0.2:
+            c.jump = True
+        elif tsj < 0.25:
+            c.jump = False
+        elif tsj >=0.25 and tsj < 0.27 and target.data[2]>350:
+            c.jump = True
+            c.boost = False
+            c.yaw = 0
+            c.pitch = 0
+            c.roll = 0
+        else:
+            c.jump = False            
     return c
-        
 
 
 def sevenC(agent,target,speed):

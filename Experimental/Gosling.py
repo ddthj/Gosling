@@ -45,10 +45,10 @@ class Gosling(BaseAgent):
         except:
             pass
         '''   
-        if self.state.expired or self.players[0].location.data[2]>100:
+        if self.state.expired or self.players[0].location.data[2]>100 or self.ball.location.data[1] > 5095 or self.ball.velocity.data[1] < -250 or self.ball.velocity.data[0] >500:
             print("reset")
-            car_state = CarState(physics=Physics(location=vector3(0,0,20),velocity = vector3(0,0,0),rotation = vector3(0,rd(3),0)))
-            ball_state = BallState(Physics(location=vector3(rd(1500),0,rd(200)+500),velocity=vector3(rd(500),rd(500),rd(200)+1000),angular_velocity=vector3(0,0,0)))
+            car_state = CarState(physics=Physics(location=vector3(0,5010,20),velocity = vector3(0,0,0),rotation = vector3(0,-1.57,0)))
+            ball_state = BallState(Physics(location=vector3(rd(100),3000,100),velocity=vector3(rd(350),rd(400)+1100,rd(100)+700),angular_velocity=vector3(0,0,0)))
             game_state = GameState(ball = ball_state,cars={self.index: car_state})
             self.set_game_state(game_state)
             self.jt = time.time() - 2
