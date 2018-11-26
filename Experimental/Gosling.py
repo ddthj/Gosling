@@ -16,6 +16,18 @@ Episode 5 Code
 
 *now with comments!*
 '''
+
+'''
+Goal Training
+print("reset")
+car_state = CarState(physics=Physics(location=vector3(0,2010,20),velocity = vector3(0,0,0),rotation = vector3(0,1.57,0)))
+ball_state = BallState(Physics(location=vector3(rd(100),1000,100),velocity=vector3(rd(350),rd(400)+1200,rd(100)+1200),angular_velocity=vector3(0,0,0)))
+game_state = GameState(ball = ball_state,cars={self.index: car_state})
+self.set_game_state(game_state)
+self.jt = time.time() - 2
+self.state = seven()
+'''
+
 def rd(x):
     return random.randint(-x,x)
 
@@ -27,32 +39,20 @@ class Gosling(BaseAgent):
         self.players = [] #holds other players in match
         self.start = time.time()
 
-        self.state = seven()
+        self.state = circleDrive()
         self.controller = calcController
         self.jt = time.time()
 
     def checkState(self):
-        '''
-        try:
-            if self.players[0].location.data[2]>100:
-                print("reset")
-                car_state = CarState(boost_amount = 100, physics=Physics(velocity=vector3(0,0,0), location=vector3(0,1000,20),rotation=vector3(0,-1,0)))
-                ball_state = BallState(Physics(location=vector3(0,0,0),velocity=vector3(0,0,1000),angular_velocity=vector3(0,0,0)))
-                game_state = GameState(ball = ball_state,cars={self.index: car_state})
-                self.set_game_state(game_state)
-                self.jt = time.time() - 2
-                self.state = seven()
-        except:
-            pass
-        '''   
-        if self.state.expired or self.players[0].location.data[2]>100 or self.ball.location.data[1] > 5095 or self.ball.velocity.data[1] < -250 or self.ball.velocity.data[0] >500:
+        #print (self.players[0].velocity.data[2])
+        if self.state.expired:
             print("reset")
-            car_state = CarState(physics=Physics(location=vector3(0,5010,20),velocity = vector3(0,0,0),rotation = vector3(0,-1.57,0)))
-            ball_state = BallState(Physics(location=vector3(rd(100),3000,100),velocity=vector3(rd(350),rd(400)+1100,rd(100)+700),angular_velocity=vector3(0,0,0)))
+            car_state = CarState(physics=Physics(location=vector3(rd(3500),rd(4500),20),velocity = vector3(0,0,0),rotation = vector3(0,1.57,0)))
+            ball_state = BallState(Physics(location=vector3(rd(3500),rd(4500),100),velocity=vector3(rd(350),rd(400),0),angular_velocity=vector3(0,0,0)))
             game_state = GameState(ball = ball_state,cars={self.index: car_state})
             self.set_game_state(game_state)
-            self.jt = time.time() - 2
-            self.state = seven()
+            self.state = circleDrive()
+          
             '''
             if calcShot().available(self) == True and self.ball.location.compare(Vector3([0,0,0])) > 1:
                 self.state = calcShot()

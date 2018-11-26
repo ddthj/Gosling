@@ -112,6 +112,14 @@ def dpp(target_loc,target_vel,our_loc,our_vel):
     else:
         return 0
 
+def dpp3D(target_loc,target_vel,our_loc,our_vel):
+    d = distance3D(target_loc,our_loc)
+    if d!=0:
+        return (((target_loc.data[0] - our_loc.data[0]) * (target_vel.data[0] - our_vel.data[0])) + ((target_loc.data[1] - our_loc.data[1]) * (target_vel.data[1] - our_vel.data[1])) + ((target_loc.data[2] - our_loc.data[2]) * (target_vel.data[2] - our_vel.data[2])))/d
+    else:
+        return 0
+    
+
 def to_local(target_object,our_object):
     x = (toLocation(target_object) - our_object.location) * our_object.matrix[0]
     y = (toLocation(target_object) - our_object.location) * our_object.matrix[1]
@@ -218,4 +226,8 @@ def toLocation(target):
 def distance2D(target_object, our_object):
     difference = toLocation(target_object) - toLocation(our_object)
     return math.sqrt(difference.data[0]**2 + difference.data[1]**2)
+
+def distance3D(target_object,our_object):
+    difference = toLocation(target_object) - toLocation(our_object)
+    return math.sqrt(difference.data[0]**2 + difference.data[1]**2 + difference.data[2]**2)
 

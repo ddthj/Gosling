@@ -3,6 +3,23 @@ import time
 from rlbot.agents.base_agent import  SimpleControllerState
 from Util import *
 
+class circleDrive:
+    def __init__(self):
+        self.expired = False
+        self.running = False
+    def execute(self,agent):
+        if self.running == False:
+            target = agent.ball.location
+            target_vector = Vector3([rd(10),rd(10),0]).normalize()
+            self.time = time.time()
+            self.running = True
+        else:
+            pass
+            
+
+
+            
+
 class seven:
     def __init__(self):
         self.expired= False
@@ -11,8 +28,17 @@ class seven:
     def execute(self,agent):
         if self.jumping == False and agent.me.grounded:
             self.jumping = True
-            test = dpp(agent.ball.location,agent.ball.velocity,agent.me.location,agent.me.velocity)/1.5
-            eta = math.sqrt(((agent.ball.location - agent.me.location).magnitude()+test)/525)
+            eta = math.sqrt(((agent.ball.location - agent.me.location).magnitude())/529.165)
+            targetetaloc = future(agent.ball, eta)
+            before = dpp3D(agent.ball.location,agent.ball.velocity,agent.me.location,agent.me.velocity)
+            after = dpp3D(targetetaloc,agent.ball.velocity,agent.me.location,agent.me.velocity)
+            if sign(before) == sign(after):
+                eta = math.sqrt(((agent.ball.location - agent.me.location).magnitude()+before)/529.165)
+            else:
+                eta = math.sqrt(((agent.ball.location - agent.me.location).magnitude()+before+after)/529.165)
+            test = dpp3D(targetetaloc,agent.ball.velocity,agent.me.location,agent.me.velocity)
+            eta = math.sqrt(((agent.ball.location - agent.me.location).magnitude()+test)/529.165)
+            
             self.time = time.time() + eta
             target = Vector3([0,0,0])
         else:
@@ -63,11 +89,11 @@ def deltaC(agent, target):
             roll_to_target = math.atan2(top.data[1],top.data[2])
             c.roll = steerPD(roll_to_target,agent.me.rvelocity.data[2]*0.5)
         tsj = time.time() - agent.jt
-        if tsj < 0.2:
+        if tsj < 0.215:
             c.jump = True
         elif tsj < 0.25:
             c.jump = False
-        elif tsj >=0.25 and tsj < 0.27 and target.data[2]>350:
+        elif tsj >=0.25 and tsj < 0.27 and target.data[2]>560:
             c.jump = True
             c.boost = False
             c.yaw = 0
