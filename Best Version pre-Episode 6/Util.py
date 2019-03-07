@@ -101,6 +101,9 @@ def rotator_to_matrix(our_object):
     matrix.append(Vector3([-CR*CY*SP-SR*SY, -CR*SY*SP+SR*CY, CP*CR]))
     return matrix
 
+def radius(v):
+    return 139.059 + (0.1539 * v) + (0.0001267716565 * v * v)
+
 def ballReady(agent):
     ball = agent.ball
     if abs(ball.velocity.data[2]) < 150 and timeZ(agent.ball) < 1:

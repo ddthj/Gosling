@@ -237,6 +237,13 @@ def calcController(agent, target_object,target_speed):
 
     current_speed = velocity2D(agent.me)
     controller_state.steer = steer(angle_to_ball)
+    r = radius(current_speed)
+    cool = (Vector3([0,sign(location.data[1])*(r+40),0]) - Vector3([location.data[0],location.data[1],0])).magnitude()/cap(r*1.7,1,1200)
+    if cool < 0.6:
+        controller_state.handbrake = True
+    else:
+        controller_state.handbrake = False
+    target_speed = cap(target_speed*cool,-target_speed,target_speed)
 
     #throttle
     if target_speed > current_speed:
@@ -257,6 +264,13 @@ def shotController(agent, target_object,target_speed):
     current_speed = velocity2D(agent.me)
     #steering
     controller_state.steer = steer(angle_to_target)
+    r = radius(current_speed)
+    cool = (Vector3([0,sign(location.data[1])*(r+40),0]) - Vector3([location.data[0],location.data[1],0])).magnitude()/cap(r*1.7,1,1200)
+    if cool < 0.6:
+        controller_state.handbrake = True
+    else:
+        controller_state.handbrake = False
+    target_speed = cap(target_speed*cool,-target_speed,target_speed)
 
     #throttle
     if target_speed > 1400 and target_speed > current_speed and agent.start > 2.5 and current_speed < 2250:
