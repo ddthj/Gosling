@@ -37,9 +37,9 @@ class Gosling(GoslingAgent):
         can_shoot = my_offense_slope > 0.5
         can_defend = my_defense_slope > 0.75
         foe_can_shoot = best_foe_offense_slope > 0.5
-        foe_can_defend = best_foe_defense_slope > 0.75
+        foe_can_defend = best_foe_defense_slope > 1.5
         friend_can_shoot = best_friend_offense_slope > 0.5
-        friend_can_defend = best_friend_defense_slope > 0.75
+        friend_can_defend = best_friend_defense_slope > 1.5
         my_posession = my_approach_time < best_foe_approach_time and my_approach_time < best_friend_approach_time
         foe_posession = best_foe_approach_time < my_approach_time and best_foe_approach_time < best_friend_approach_time
         friend_posession = best_friend_approach_time < my_approach_time and best_friend_approach_time < best_foe_approach_time

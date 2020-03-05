@@ -14,7 +14,7 @@ def find_hits(agent,targets):
     #>{"goal":[a ton of jump and aerial routines,in order from soonest to latest], "anywhere_but_my_net":[more routines and stuff]}
     hits = {name:[] for name in targets}
     struct = agent.get_ball_prediction_struct()
-    
+
     #Begin looking at slices 0.25s into the future
     #The number of slices 
     i = 15
@@ -31,8 +31,8 @@ def find_hits(agent,targets):
         
             #determine the next slice we will look at, based on ball velocity (slower ball needs fewer slices)
             i += 15 - cap(int(ball_velocity//150),0,13)
-            
-            car_to_ball = ball_location - agent.me.location
+
+            car_to_ball = ball_location - agent.me.location 
             #Adding a True to a vector's normalize will have it also return the magnitude of the vector
             direction, distance = car_to_ball.normalize(True)
 
