@@ -47,6 +47,8 @@ class Gosling(GoslingAgent):
 
         close = my_approach_time < 2.0
         foe_close = best_foe_approach_time < 2.0
+        if agent.index == 0:
+            agent.debug_stack()
 
         action = "nothing"
 
