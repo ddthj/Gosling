@@ -3,9 +3,16 @@ from objects import *
 from routines import *
 
 
-#This file is for strategy
+def ball_bad(agent: GoslingAgent):
+    goal_to_ball = abs(agent.ball.location - agent.foe_goal.location)
+    if goal_to_ball.y / cap(goal_to_ball.x, 1, 6000) < 0.5:
+        return True
+    return False
 
+
+#This file is for strategy
 class Gosling(GoslingAgent):
+
     def run(agent):
         #First thing we do is grab vectors from the ball to all the goalposts
         #We will use these vectors to determine which cars are in the best offense/defense positions
@@ -31,7 +38,7 @@ class Gosling(GoslingAgent):
         foe_approach_times = sorted([(agent.ball.location-foe.location).magnitude()/(2300-cap((agent.ball.location-foe.location).normalize().dot(agent.ball.velocity),-6000,1500)) for foe in agent.foes])
         best_friend_approach_time = cap(friend_approach_times[0],0,6.0) if len(friend_approach_times) > 0 else 6.0
         best_foe_approach_time = cap(foe_approach_times[0],0,6.0) if len(foe_approach_times) > 0 else 6.0
-        
+
         #Making boolean flags from our new numbers
         have_boost = agent.me.boost > 20
         can_shoot = my_offense_slope > 0.5
@@ -47,22 +54,22 @@ class Gosling(GoslingAgent):
 
         close = my_approach_time < 2.0
         foe_close = best_foe_approach_time < 2.0
-        if agent.index == 0:
-            agent.debug_stack()
 
         action = "nothing"
 
         if (close or have_boost or not foe_can_defend) and can_defend:
             if friend_better and (friend_can_defend or friend_can_shoot):
                 action = "shadow" if have_boost else "grab-boost"
+            elif can_shoot:
+                action = "goal-shot"
             else:
-                action = "goal-shot" if can_shoot else "upfield-shot"
+                action = "upfield-shot"
         elif not have_boost and (not foe_can_shoot or friend_can_defend):
             action = "grab-boost"
         elif have_boost:
             if (friend_can_shoot or friend_can_defend) and not can_defend:
                 action = "shadow"
-            elif close:
+            elif close and not ball_bad(agent):
                 action = "clear"
             else:
                 action = "retreat"
@@ -91,7 +98,7 @@ class Gosling(GoslingAgent):
                 else:
                     target = agent.ball.location + ((agent.ball.location-agent.foe_goal.location).normalize() * (agent.ball.location-agent.me.location) / 2)
                     defaultPD(agent,agent.me.local(target-agent.me.location))
-                    defaultThrottle(agent,2000)    
+                    defaultThrottle(agent,2000)
             elif action == "clear":
                 scaler = Vector3(5,1,1)
                 targets = {"clearplus":(agent.foe_goal.right_post*scaler,agent.friend_goal.left_post*scaler),"clearminus":(agent.friend_goal.right_post*scaler,agent.foe_goal.left_post*scaler)}
@@ -124,10 +131,8 @@ class Gosling(GoslingAgent):
                         if (agent.me.location-boost.location).flatten().magnitude() < (agent.me.location-closest.location).flatten().magnitude():
                             closest = boost
                     agent.push(goto_boost(closest))
-            elif action == "retreat":
-                defaultPD(agent,agent.me.local(agent.friend_goal.location-agent.me.location))
-                defaultThrottle(agent,2300)
-                agent.controller.boost = False if agent.me.airborne else agent.controller.boost
+                else:
+                    action = "retreat"
             elif action == "shadow":
                 direction,distance = (agent.ball.location-agent.friend_goal.location).normalize(True)
                 target = agent.friend_goal.location + (direction * (distance/2))
@@ -135,6 +140,15 @@ class Gosling(GoslingAgent):
                 defaultThrottle(agent,cap(distance*2,200,1410))
                 agent.controller.boost = False if agent.me.airborne else agent.controller.boost
             elif action == "nothing":
-                pass#print("nothing")
-            else:
-                print("Action %s not recognized" % action)
+                pass #print("nothing")
+
+            if action == "retreat":
+                local = agent.me.local(agent.friend_goal.location-agent.me.location)
+                angles = defaultPD(agent,local)
+                speed_req = 2300 if local.magnitude() > 1000 else 0
+                defaultThrottle(agent,speed_req)
+                velocity = agent.me.velocity.magnitude()
+                if velocity > 650 and abs(angles[1]) < 0.05 and local.magnitude() > velocity * 2.5:
+                    agent.push(flip(local))
+                agent.controller.boost = False if agent.me.airborne else agent.controller.boost
+
